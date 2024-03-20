@@ -2,7 +2,9 @@ package main
 
 import (
 	"basictrade-gading/database"
+	"basictrade-gading/routes"
 	"basictrade-gading/utils"
+
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
@@ -10,6 +12,7 @@ import (
 func init() {
 	utils.ReadConfigEnvironment()
 	utils.InitZeroLog()
+	utils.InitGoValidation()
 }
 
 func main() {
@@ -25,5 +28,10 @@ func main() {
 			log.Panic().Msg(errMigration.Error())
 		}
 	}
-	log.Info().Msg("SUCCESS RUNNING BASIC-TRADE SERVICE")
+
+	portApp := viper.GetString("APP_PORT")
+	app := routes.RouteSession(db)
+	app.Run(portApp)
+
+	
 }
