@@ -17,3 +17,15 @@ func HashPass(password string) string {
 
 	return string(hashedPasswordHex)
 }
+
+func PassValidation(password string, hashPassword string) bool {
+
+	requestPassword := HashPass(password)
+
+	if requestPassword == hashPassword {
+		return true
+	} else {
+		return false
+	}
+
+}

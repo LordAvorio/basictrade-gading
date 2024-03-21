@@ -53,3 +53,38 @@ func (c *AdminController) RegisterAdmin(ctx *gin.Context) {
 	models.ResponseSuccess(ctx, "Admin register is successfull")
 
 }
+
+func (c *AdminController) LoginAdmin(ctx *gin.Context) {
+
+	adminLoginRequest := models.AdminLoginRequest{}
+
+	if ctx.ContentType() == "multipart/form-data" {
+		if err := ctx.Bind(&adminLoginRequest); err != nil {
+			models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		models.ResponseError(ctx, "Request should be form in multipart/form-data", http.StatusInternalServerError)
+		return
+	}
+
+	checkValidation := adminLoginRequest.ValidationLogin()
+	if len(checkValidation) > 0 {
+		models.ResponseErrorWithData(ctx, "Validation Error", http.StatusBadRequest, checkValidation)
+		return
+	}
+
+	adminLoginData := models.Admin{
+		Email:    adminLoginRequest.Email,
+		Password: adminLoginRequest.Password,
+	}
+
+	token, err := c.adminService.LoginAdmin(&adminLoginData)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusForbidden)
+		return
+	}
+
+	models.ResponseSuccessWithData(ctx, token)
+
+}

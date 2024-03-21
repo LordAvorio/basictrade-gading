@@ -3,8 +3,8 @@ package models
 import (
 	"basictrade-gading/utils"
 	"fmt"
-	"time"
 	"github.com/go-playground/validator/v10"
+	"time"
 )
 
 type Admin struct {
@@ -19,6 +19,11 @@ type Admin struct {
 
 type AdminCreateRequest struct {
 	Name     string `form:"name" validate:"required,lte=100"`
+	Email    string `form:"email" validate:"required,lte=155,email"`
+	Password string `form:"password" validate:"required,lte=155"`
+}
+
+type AdminLoginRequest struct {
 	Email    string `form:"email" validate:"required,lte=155,email"`
 	Password string `form:"password" validate:"required,lte=155"`
 }
@@ -47,15 +52,26 @@ func validationMessage(field string, tag string) string {
 func (acr *AdminCreateRequest) ValidationRegister() map[string]string {
 
 	errorMessage := map[string]string{}
-
 	err := utils.Validate.Struct(acr)
 
 	if err != nil {
-
 		for _, err := range err.(validator.ValidationErrors) {
 			errorMessage[err.Field()] = validationMessage(err.Field(), err.Tag())
 		}
+	}
 
+	return errorMessage
+}
+
+func (alr *AdminLoginRequest) ValidationLogin() map[string]string {
+
+	errorMessage := map[string]string{}
+	err := utils.Validate.Struct(alr)
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			errorMessage[err.Field()] = validationMessage(err.Field(), err.Tag())
+		}
 	}
 
 	return errorMessage
