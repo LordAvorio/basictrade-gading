@@ -22,6 +22,7 @@ func RouteSession(db *gorm.DB) *gin.Engine {
 	adminRoute := router.Group("auth")
 	{
 		adminRoute.POST("/register", middlewares.CORSMiddleware() ,adminController.RegisterAdmin)
+		adminRoute.POST("/login", middlewares.CORSMiddleware() ,adminController.LoginAdmin)
 	}
 
 	return router

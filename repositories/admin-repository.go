@@ -13,6 +13,7 @@ type AdminRepository struct {
 
 type IAdminRepository interface {
 	RegisterAdmin(*models.Admin) error
+	GetAccount(string) (*models.Admin, error)
 }
 
 func NewAdminRepository(db *gorm.DB) *AdminRepository {
@@ -31,4 +32,16 @@ func (r *AdminRepository) RegisterAdmin(admin *models.Admin) error {
 
 	return nil
 
+}
+
+func (r *AdminRepository) GetAccount(email string) (*models.Admin, error) {
+
+	dataAdmin := models.Admin{}
+	err := r.db.Where("email = ?", email).Take(&dataAdmin).Error
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return nil, err
+	}
+
+	return &dataAdmin, nil
 }
