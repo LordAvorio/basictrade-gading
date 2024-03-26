@@ -2,7 +2,9 @@ package utils
 
 import (
 	"fmt"
-
+	"time"
+	"github.com/rs/zerolog/log"
+	"github.com/segmentio/ksuid"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/argon2"
 )
@@ -27,5 +29,17 @@ func PassValidation(password string, hashPassword string) bool {
 	} else {
 		return false
 	}
+
+}
+
+func GenerateKSUID() (string, error) {
+
+	generatedId, err := ksuid.NewRandomWithTime(time.Now())
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return "", err
+	}
+
+	return generatedId.String(), nil
 
 }

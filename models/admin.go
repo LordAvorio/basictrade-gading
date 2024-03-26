@@ -2,17 +2,17 @@ package models
 
 import (
 	"basictrade-gading/utils"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"time"
 )
 
 type Admin struct {
-	ID        uint   `gorm:"primaryKey"`
-	UUID      string `gorm:"not null; type:varchar(155)"`
-	Name      string `gorm:"not null; type:varchar(100)"`
-	Email     string `gorm:"not null; type:varchar(155); unique"`
-	Password  string `gorm:"not null; type:varchar(155);"`
+	ID        uint      `gorm:"primaryKey"`
+	UUID      string    `gorm:"not null; type:varchar(155)"`
+	Name      string    `gorm:"not null; type:varchar(100)"`
+	Email     string    `gorm:"not null; type:varchar(155); unique"`
+	Password  string    `gorm:"not null; type:varchar(155);"`
+	Products  []Product `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
@@ -34,20 +34,6 @@ type AdminResponse struct {
 	Email string `json:"email"`
 }
 
-func validationMessage(field string, tag string) string {
-	message := ""
-
-	switch tag {
-	case "required":
-		message = fmt.Sprintf("%s is required", field)
-	case "email":
-		message = "Wrong format email"
-	case "lte":
-		message = fmt.Sprintf("%s value is too long", field)
-	}
-
-	return message
-}
 
 func (acr *AdminCreateRequest) ValidationRegister() map[string]string {
 
@@ -56,7 +42,7 @@ func (acr *AdminCreateRequest) ValidationRegister() map[string]string {
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			errorMessage[err.Field()] = validationMessage(err.Field(), err.Tag())
+			errorMessage[err.Field()] = utils.ValidationMessage(err.Field(), err.Tag())
 		}
 	}
 
@@ -70,7 +56,7 @@ func (alr *AdminLoginRequest) ValidationLogin() map[string]string {
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			errorMessage[err.Field()] = validationMessage(err.Field(), err.Tag())
+			errorMessage[err.Field()] = utils.ValidationMessage(err.Field(), err.Tag())
 		}
 	}
 
