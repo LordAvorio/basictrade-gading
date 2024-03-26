@@ -6,7 +6,6 @@ import (
 	"basictrade-gading/utils"
 	"basictrade-gading/utils/helpers"
 	"errors"
-	"github.com/google/uuid"
 )
 
 type AdminService struct {
@@ -26,12 +25,16 @@ func NewAdminService(adminRepo repositories.IAdminRepository) *AdminService {
 
 func (s *AdminService) RegisterAdmin(admin *models.Admin) error {
 
-	uuidAdmin := uuid.NewString()
+	generateKsuid, err := utils.GenerateKSUID()
+	if err != nil {
+		return err
+	}
+
 	hashedPassword := utils.HashPass(admin.Password)
 	admin.Password = hashedPassword
-	admin.UUID = uuidAdmin
+	admin.UUID = generateKsuid
 
-	err := s.adminRepo.RegisterAdmin(admin)
+	err = s.adminRepo.RegisterAdmin(admin)
 	if err != nil {
 		return err
 	}
@@ -51,7 +54,7 @@ func (s *AdminService) LoginAdmin(admin *models.Admin) (string, error) {
 		return "", errors.New("login is failed because password is wrong")
 	}
 
-	jwtToken, err := helpers.GenerateToken(dataAccount.UUID, dataAccount.Email)
+	jwtToken, err := helpers.GenerateToken(dataAccount.ID, dataAccount.Email)
 	if err != nil {
 		return "", err
 	}

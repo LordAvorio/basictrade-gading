@@ -32,12 +32,6 @@ func (c *AdminController) RegisterAdmin(ctx *gin.Context) {
 		return
 	}
 
-	checkValidation := adminRegisterRequest.ValidationRegister()
-	if len(checkValidation) > 0 {
-		models.ResponseErrorWithData(ctx, "Validation Error", http.StatusBadRequest, checkValidation)
-		return
-	}
-
 	adminRegisterData := models.Admin{
 		Name:     adminRegisterRequest.Name,
 		Email:    adminRegisterRequest.Email,
@@ -65,12 +59,6 @@ func (c *AdminController) LoginAdmin(ctx *gin.Context) {
 		}
 	} else {
 		models.ResponseError(ctx, "Request should be form in multipart/form-data", http.StatusInternalServerError)
-		return
-	}
-
-	checkValidation := adminLoginRequest.ValidationLogin()
-	if len(checkValidation) > 0 {
-		models.ResponseErrorWithData(ctx, "Validation Error", http.StatusBadRequest, checkValidation)
 		return
 	}
 
