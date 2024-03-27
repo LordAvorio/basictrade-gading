@@ -13,6 +13,7 @@ type VariantService struct {
 
 type IVariantService interface {
 	CreateVariant(*models.VariantRequest) (*models.Variant, error)
+	GetVariant(string) (*models.Variant, error)
 }
 
 func NewVariantService(variantRepo repositories.IVariantRepository, productRepo repositories.IProductRepository) *VariantService {
@@ -48,4 +49,14 @@ func (s *VariantService) CreateVariant(dataRequest *models.VariantRequest) (*mod
 
 	return result, nil
 
+}
+
+func (s *VariantService) GetVariant(uuid string) (*models.Variant, error) {
+
+	resultVariant, err := s.variantRepo.GetVariant(uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultVariant, nil
 }
