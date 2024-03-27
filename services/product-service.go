@@ -11,8 +11,9 @@ type ProductService struct {
 	productRepo repositories.IProductRepository
 }
 
-type IProductService interface{
-	CreateProduct(*models.ProductRequest)(*models.Product, error)
+type IProductService interface {
+	CreateProduct(*models.ProductRequest) (*models.Product, error)
+	GetProduct(string) (*models.Product, error)
 }
 
 func NewProductService(productRepo repositories.IProductRepository) *ProductService {
@@ -36,12 +37,12 @@ func (s *ProductService) CreateProduct(dataRequest *models.ProductRequest) (*mod
 	}
 
 	data := models.Product{
-		UUID: generateKsuid,
-		Name: dataRequest.Name,
-		AdminID: dataRequest.AdminId,
+		UUID:     generateKsuid,
+		Name:     dataRequest.Name,
+		AdminID:  dataRequest.AdminId,
 		ImageUrl: uploadResult,
 	}
-	
+
 	resultProduct, err := s.productRepo.CreateProduct(&data)
 	if err != nil {
 		return nil, err
@@ -49,4 +50,14 @@ func (s *ProductService) CreateProduct(dataRequest *models.ProductRequest) (*mod
 
 	return resultProduct, nil
 
+}
+
+func (s *ProductService) GetProduct(uuid string) (*models.Product, error) {
+
+	resultProduct, err := s.productRepo.GetProduct(uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultProduct, nil
 }

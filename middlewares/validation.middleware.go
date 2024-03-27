@@ -2,8 +2,9 @@ package middlewares
 
 import (
 	"basictrade-gading/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ValidationRequest(section string) gin.HandlerFunc {
@@ -11,6 +12,7 @@ func ValidationRequest(section string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		errorMessage := map[string]string{}
+		
 
 		switch section {
 		case "register-auth":
@@ -58,8 +60,7 @@ func ValidationRequest(section string) gin.HandlerFunc {
 				errorMessage = createVariantValidation
 			}
 		}
-
-
+		
 		if len(errorMessage) > 0 {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorMessage)
 			return
