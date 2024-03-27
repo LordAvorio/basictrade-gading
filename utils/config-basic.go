@@ -51,6 +51,8 @@ func ValidationMessage(field string, tag string) string {
 		message = "Wrong format email"
 	case "lte":
 		message = fmt.Sprintf("%s value is too long", field)
+	case "gte":
+		message = fmt.Sprintf("%s value is too short", field)
 	}
 
 	return message

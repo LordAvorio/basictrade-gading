@@ -13,6 +13,7 @@ type ProductRepository struct {
 
 type IProductRepository interface {
 	CreateProduct(*models.Product)(*models.Product, error)
+	GetProduct(string)(*models.Product, error)
 }
 
 func NewProductRepository(db *gorm.DB) *ProductRepository {
@@ -32,3 +33,16 @@ func (r *ProductRepository) CreateProduct(product *models.Product) (*models.Prod
 	return product, nil
 
 }
+
+func (r *ProductRepository) GetProduct(uuid string) (*models.Product, error) {
+
+	result := models.Product{}
+	err := r.db.Where("uuid = ?", uuid).Take(&result).Error
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return nil, err
+	}
+	return &result, nil
+
+}
+
