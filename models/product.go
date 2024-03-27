@@ -2,9 +2,9 @@ package models
 
 import (
 	"basictrade-gading/utils"
+	"github.com/go-playground/validator/v10"
 	"mime/multipart"
 	"time"
-	"github.com/go-playground/validator/v10"
 )
 
 type Product struct {
@@ -14,13 +14,14 @@ type Product struct {
 	ImageUrl  string `gorm:"not null; type:varchar(255)"`
 	AdminID   uint
 	Admin     *Admin
+	Variants  []Variant `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
 
 type ProductRequest struct {
 	Name    string               `form:"name" validate:"required",lte=100`
-	Image   multipart.FileHeader `form:"file" validate:"required"`
+	Image   multipart.FileHeader `form:"file" validate:"required, image"`
 	AdminId uint
 }
 
@@ -30,8 +31,6 @@ type ProductResponse struct {
 	ImageUrl string `json:"image_url"`
 	AdminId  uint   `json:"admin_id"`
 }
-
-
 
 func (pr *ProductRequest) ValidationProductCreate() map[string]string {
 
@@ -43,7 +42,7 @@ func (pr *ProductRequest) ValidationProductCreate() map[string]string {
 		for key, value := range errorValidationImage {
 			errorMessage[key] = value
 		}
-	} 
+	}
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {

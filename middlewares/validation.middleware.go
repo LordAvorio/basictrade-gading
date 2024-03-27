@@ -46,7 +46,19 @@ func ValidationRequest(section string) gin.HandlerFunc {
 			if len(createProductValidation) > 0 {
 				errorMessage = createProductValidation
 			}
+		case "create-variant":
+			variantCreateRequest := models.VariantRequest{}
+			if err := ctx.Bind(&variantCreateRequest); err != nil {
+				ctx.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+
+			createVariantValidation := variantCreateRequest.ValidationVariantCreate()
+			if len(createVariantValidation) > 0 {
+				errorMessage = createVariantValidation
+			}
 		}
+
 
 		if len(errorMessage) > 0 {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorMessage)

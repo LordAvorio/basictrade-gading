@@ -15,12 +15,15 @@ func RouteSession(db *gorm.DB) *gin.Engine {
 
 	adminRepo := repositories.NewAdminRepository(db)
 	productRepo := repositories.NewProductRepository(db)
+	variantRepo := repositories.NewVariantRepository(db)
 
 	adminService := services.NewAdminService(adminRepo)
 	productService := services.NewProductService(productRepo)
+	variantService := services.NewVariantService(variantRepo, productRepo)
 
 	adminController := controllers.NewAdminController(adminService)
 	productController := controllers.NewProductController(productService)
+	variantController := controllers.NewVariantController(variantService)
 
 	adminRoute := router.Group("auth")
 	{
@@ -33,6 +36,12 @@ func RouteSession(db *gorm.DB) *gin.Engine {
 	{
 		productRoute.Use(middlewares.CORSMiddleware(), middlewares.Authentication())
 		productRoute.POST("/", middlewares.ValidationRequest("create-product"),productController.CreateProduct)
+	}
+
+	variantRoute := router.Group("variants")
+	{
+		variantRoute.Use(middlewares.CORSMiddleware(), middlewares.Authentication())
+		variantRoute.POST("/", middlewares.ValidationRequest("create-variant"), variantController.CreateVariant)
 	}
 
 	return router
