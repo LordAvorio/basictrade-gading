@@ -50,3 +50,28 @@ func(c *VariantController)CreateVariant(ctx *gin.Context){
 	models.ResponseSuccessWithData(ctx, dataResponse)
 
 }
+
+func (c *VariantController) GetVariant(ctx *gin.Context) {
+
+	uuidVariant := ctx.Param("uuid")
+	if uuidVariant == "" {
+		models.ResponseError(ctx, "Variant UUID cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	resultData, err := c.variantService.GetVariant(uuidVariant)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dataResponse := models.VariantResponse{
+		UUID: resultData.UUID,
+		VariantName: resultData.VariantName,
+		Quantity: resultData.Quantity,
+		ProductID: resultData.ProductID,
+	}
+
+	models.ResponseSuccessWithData(ctx, dataResponse)
+
+}
