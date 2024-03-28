@@ -20,8 +20,8 @@ type Product struct {
 }
 
 type ProductRequest struct {
-	Name    string               `form:"name" validate:"required",lte=100`
-	Image   multipart.FileHeader `form:"file" validate:"required, image"`
+	Name    string               `form:"name" validate:"required,lte=100"`
+	Image   multipart.FileHeader `form:"file" validate:"required"`
 	AdminId uint
 }
 

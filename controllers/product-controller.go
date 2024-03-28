@@ -3,10 +3,12 @@ package controllers
 import (
 	"basictrade-gading/models"
 	"basictrade-gading/services"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
-	"net/http"
 )
 
 type ProductController struct {
@@ -77,4 +79,43 @@ func (c *ProductController) GetProduct(ctx *gin.Context) {
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
 
+}
+
+func (c *ProductController) GetProducts(ctx *gin.Context) {
+
+	offsetParam, ok := ctx.GetQuery("offset")
+	if !ok {
+		models.ResponseError(ctx, "Offset cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	limitParam, ok := ctx.GetQuery("limit")
+	if !ok {
+		models.ResponseError(ctx, "Limit cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	nameFilter, _ := ctx.GetQuery("name")
+
+	offset, err := strconv.Atoi(offsetParam)
+	if err != nil || offset < 0 {
+		log.Error().Msg("Invalid offset value")
+		models.ResponseError(ctx, "Invalid offset value", http.StatusInternalServerError)
+		return
+	}
+
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 0 {
+		log.Error().Msg("Invalid offset value")
+		models.ResponseError(ctx, "Invalid limit value", http.StatusInternalServerError)
+		return
+	}
+
+	result, err := c.productService.GetProducts(limit, offset, nameFilter)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return		
+	}
+
+	models.ResponseSuccessWithData(ctx, result)
 }

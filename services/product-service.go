@@ -14,6 +14,7 @@ type ProductService struct {
 type IProductService interface {
 	CreateProduct(*models.ProductRequest) (*models.Product, error)
 	GetProduct(string) (*models.Product, error)
+	GetProducts(int, int, string) (*models.Pagination, error)
 }
 
 func NewProductService(productRepo repositories.IProductRepository) *ProductService {
@@ -60,4 +61,43 @@ func (s *ProductService) GetProduct(uuid string) (*models.Product, error) {
 	}
 
 	return resultProduct, nil
+}
+
+func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*models.Pagination, error) {
+
+	dataProducts, err := s.productRepo.GetProducts(offset, limit, nameFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	totalProducts, err := s.productRepo.GetTotalProduct(nameFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPage := helpers.GetTotalPages(totalProducts, limit)
+
+	resultProducts := []models.ProductResponse{}
+	for _, value := range *dataProducts {
+		dataProduct := models.ProductResponse {
+			UUID: value.UUID,
+			Name: value.Name,
+			ImageUrl: value.ImageUrl,
+			AdminId: value.AdminID,
+		}
+
+		resultProducts = append(resultProducts, dataProduct)
+	}
+
+
+	result := models.Pagination{
+		Data:         resultProducts,
+		TotalPage:    totalPage,
+		NextPage:     helpers.GetNextPage(offset, limit, totalProducts),
+		PreviousPage: helpers.GetPrevPage(offset, limit),
+		CurrentPage:  helpers.GetCurrentPage(offset, limit),
+	}
+
+	return &result, nil
+
 }
