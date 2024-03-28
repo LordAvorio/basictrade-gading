@@ -4,6 +4,7 @@ import (
 	"basictrade-gading/models"
 	"basictrade-gading/repositories"
 	"basictrade-gading/utils"
+	"basictrade-gading/utils/helpers"
 )
 
 type VariantService struct {
@@ -14,6 +15,7 @@ type VariantService struct {
 type IVariantService interface {
 	CreateVariant(*models.VariantRequest) (*models.Variant, error)
 	GetVariant(string) (*models.Variant, error)
+	GetVariants(int, int, string) (*models.Pagination, error)
 }
 
 func NewVariantService(variantRepo repositories.IVariantRepository, productRepo repositories.IProductRepository) *VariantService {
@@ -59,4 +61,43 @@ func (s *VariantService) GetVariant(uuid string) (*models.Variant, error) {
 	}
 
 	return resultVariant, nil
+}
+
+func (s *VariantService) GetVariants(limit, offset int, nameFilter string) (*models.Pagination, error) {
+
+	dataVariants, err := s.variantRepo.GetVariants(offset, limit, nameFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	totalVariants, err := s.variantRepo.GetTotalVariant(nameFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPage := helpers.GetTotalPages(totalVariants, limit)
+
+	resultVariants := []models.VariantResponse{}
+	for _, value := range *dataVariants {
+		dataVariant := models.VariantResponse {
+			UUID: value.UUID,
+			VariantName: value.VariantName,
+			Quantity: value.Quantity,
+			ProductID: value.ProductID,
+		}
+
+		resultVariants = append(resultVariants, dataVariant)
+	}
+
+
+	result := models.Pagination{
+		Data:         resultVariants,
+		TotalPage:    totalPage,
+		NextPage:     helpers.GetNextPage(offset, limit, totalVariants),
+		PreviousPage: helpers.GetPrevPage(offset, limit),
+		CurrentPage:  helpers.GetCurrentPage(offset, limit),
+	}
+
+	return &result, nil
+
 }

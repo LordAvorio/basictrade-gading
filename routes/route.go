@@ -34,17 +34,18 @@ func RouteSession(db *gorm.DB) *gin.Engine {
 
 	productRoute := router.Group("products")
 	{
-		productRoute.Use(middlewares.CORSMiddleware(), middlewares.Authentication())
-		productRoute.POST("/", middlewares.ValidationRequest("create-product"), productController.CreateProduct)
+		productRoute.Use(middlewares.CORSMiddleware())
+		productRoute.POST("/", middlewares.Authentication(), middlewares.ValidationRequest("create-product"), productController.CreateProduct)
 		productRoute.GET("/:uuid", productController.GetProduct)
 		productRoute.GET("/", productController.GetProducts)
 	}
 
 	variantRoute := router.Group("variants")
 	{
-		variantRoute.Use(middlewares.CORSMiddleware(), middlewares.Authentication())
-		variantRoute.POST("/", middlewares.ValidationRequest("create-variant"), variantController.CreateVariant)
+		variantRoute.Use(middlewares.CORSMiddleware())
+		variantRoute.POST("/", middlewares.Authentication(), middlewares.ValidationRequest("create-variant"), variantController.CreateVariant)
 		variantRoute.GET("/:uuid", variantController.GetVariant)
+		variantRoute.GET("/", variantController.GetVariants)
 	}
 
 	return router

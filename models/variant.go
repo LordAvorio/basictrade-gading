@@ -10,7 +10,7 @@ import (
 type Variant struct {
 	ID          uint   `gorm:"primaryKey"`
 	UUID        string `gorm:"not null; type:varchar(155)"`
-	VariantName string `gorm:"not null; type:varchar(100)"; unique`
+	VariantName string `gorm:"not null; type:varchar(100);"`
 	Quantity    int    `gorm:"not null; type:bigint"`
 	ProductID   uint
 	Product     *Product

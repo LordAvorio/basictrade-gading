@@ -14,6 +14,8 @@ type VariantRepository struct {
 type IVariantRepository interface {
 	CreateVariant(*models.Variant) (*models.Variant, error)
 	GetVariant(string) (*models.Variant, error)
+	GetVariants(int, int, string) (*[]models.Variant, error)
+	GetTotalVariant(string) (int, error)
 }
 
 func NewVariantRepository(db *gorm.DB) *VariantRepository {
@@ -39,4 +41,44 @@ func (r *VariantRepository) GetVariant(uuid string) (*models.Variant, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (r *VariantRepository) GetVariants(offset, limit int, nameFilter string) (*[]models.Variant, error) {
+	var result []models.Variant
+
+	queryStatement := r.db.Offset(offset).Limit(limit)
+
+	if nameFilter != "" {
+		queryStatement = queryStatement.Where("variant_name LIKE ?", "%"+nameFilter+"%")
+	}
+
+	err := queryStatement.Find(&result).Error
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (r *VariantRepository) GetTotalVariant(nameFilter string) (int, error) {
+
+	var totalVariant int64
+
+	if nameFilter != "" {
+		err := r.db.Model(&models.Variant{}).Where("variant_name LIKE ?", "%"+nameFilter+"%").Count(&totalVariant).Error
+		if err != nil {
+			log.Error().Msg(err.Error())
+			return 0, err
+		}
+	} else {
+		err := r.db.Model(&models.Variant{}).Count(&totalVariant).Error
+		if err != nil {
+			log.Error().Msg(err.Error())
+			return 0, err
+		}
+	}
+
+	return int(totalVariant), nil
+
 }
