@@ -4,6 +4,7 @@ import (
 	"basictrade-gading/models"
 	"basictrade-gading/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -74,4 +75,43 @@ func (c *VariantController) GetVariant(ctx *gin.Context) {
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
 
+}
+
+func (c *VariantController) GetVariants(ctx *gin.Context) {
+
+	offsetParam, ok := ctx.GetQuery("offset")
+	if !ok {
+		models.ResponseError(ctx, "Offset cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	limitParam, ok := ctx.GetQuery("limit")
+	if !ok {
+		models.ResponseError(ctx, "Limit cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	nameFilter, _ := ctx.GetQuery("variantName")
+
+	offset, err := strconv.Atoi(offsetParam)
+	if err != nil || offset < 0 {
+		log.Error().Msg("Invalid offset value")
+		models.ResponseError(ctx, "Invalid offset value", http.StatusInternalServerError)
+		return
+	}
+
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit < 0 {
+		log.Error().Msg("Invalid offset value")
+		models.ResponseError(ctx, "Invalid limit value", http.StatusInternalServerError)
+		return
+	}
+
+	result, err := c.variantService.GetVariants(limit, offset, nameFilter)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return		
+	}
+
+	models.ResponseSuccessWithData(ctx, result)
 }

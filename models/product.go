@@ -10,7 +10,7 @@ import (
 type Product struct {
 	ID        uint   `gorm:"primaryKey"`
 	UUID      string `gorm:"not null; type:varchar(155)"`
-	Name      string `gorm:"not null; type:varchar(100)"; unique`
+	Name      string `gorm:"not null; type:varchar(100); unique"`
 	ImageUrl  string `gorm:"not null; type:varchar(255)"`
 	AdminID   uint
 	Admin     *Admin
