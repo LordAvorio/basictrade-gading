@@ -15,6 +15,7 @@ type IProductRepository interface {
 	GetProduct(string) (*models.Product, error)
 	GetProducts(int, int, string) (*[]models.Product, error)
 	GetTotalProduct(string) (int, error)
+	UpdateProduct(*models.Product) (*models.Product, error)
 }
 
 func NewProductRepository(db *gorm.DB) *ProductRepository {
@@ -84,5 +85,15 @@ func (r *ProductRepository) GetTotalProduct(nameFilter string) (int, error) {
 	}
 
 	return int(totalProduct), nil
+}
+
+func (r *ProductRepository) UpdateProduct(product *models.Product) (*models.Product, error) {
+
+	err := r.db.Model(&product).Where("id = ?", product.ID).Updates(product).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 
 }

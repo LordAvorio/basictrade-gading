@@ -12,7 +12,6 @@ func ValidationRequest(section string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		errorMessage := map[string]string{}
-		
 
 		switch section {
 		case "register-auth":
@@ -59,8 +58,19 @@ func ValidationRequest(section string) gin.HandlerFunc {
 			if len(createVariantValidation) > 0 {
 				errorMessage = createVariantValidation
 			}
+		case "update-product":
+			productUpdateRequest := models.ProductUpdateRequest{}
+			if err := ctx.Bind(&productUpdateRequest); err != nil {
+				ctx.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+
+			createProducttValidation := productUpdateRequest.ValidationProductUpdate()
+			if len(createProducttValidation) > 0 {
+				errorMessage = createProducttValidation
+			}
 		}
-		
+
 		if len(errorMessage) > 0 {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorMessage)
 			return

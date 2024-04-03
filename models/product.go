@@ -25,6 +25,11 @@ type ProductRequest struct {
 	AdminId uint
 }
 
+type ProductUpdateRequest struct {
+	Name    string               `form:"name" validate:"required,lte=100"`
+	Image   multipart.FileHeader `form:"file"`
+}
+
 type ProductResponse struct {
 	UUID     string `json:"uuid"`
 	Name     string `json:"name"`
@@ -51,4 +56,28 @@ func (pr *ProductRequest) ValidationProductCreate() map[string]string {
 	}
 
 	return errorMessage
+}
+
+func (pur *ProductUpdateRequest) ValidationProductUpdate() map[string]string {
+
+	errorMessage := map[string]string{}
+	err := utils.Validate.Struct(pur)
+
+	if pur.Image.Filename != "" {
+		errorValidationImage := utils.ValidateImageHeader(&pur.Image, "file")
+		if len(errorValidationImage) > 0 {
+			for key, value := range errorValidationImage {
+				errorMessage[key] = value
+			}
+		}
+	}
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			errorMessage[err.Field()] = utils.ValidationMessage(err.Field(), err.Tag())
+		}
+	}
+
+	return errorMessage
+
 }
