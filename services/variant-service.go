@@ -16,6 +16,7 @@ type IVariantService interface {
 	CreateVariant(*models.VariantRequest) (*models.Variant, error)
 	GetVariant(string) (*models.Variant, error)
 	GetVariants(int, int, string) (*models.Pagination, error)
+	UpdateVariant(string, *models.VariantUpdateRequest) (*models.Variant, error)
 }
 
 func NewVariantService(variantRepo repositories.IVariantRepository, productRepo repositories.IProductRepository) *VariantService {
@@ -79,16 +80,15 @@ func (s *VariantService) GetVariants(limit, offset int, nameFilter string) (*mod
 
 	resultVariants := []models.VariantResponse{}
 	for _, value := range *dataVariants {
-		dataVariant := models.VariantResponse {
-			UUID: value.UUID,
+		dataVariant := models.VariantResponse{
+			UUID:        value.UUID,
 			VariantName: value.VariantName,
-			Quantity: value.Quantity,
-			ProductID: value.ProductID,
+			Quantity:    value.Quantity,
+			ProductID:   value.ProductID,
 		}
 
 		resultVariants = append(resultVariants, dataVariant)
 	}
-
 
 	result := models.Pagination{
 		Data:         resultVariants,
@@ -99,5 +99,24 @@ func (s *VariantService) GetVariants(limit, offset int, nameFilter string) (*mod
 	}
 
 	return &result, nil
+
+}
+
+func (s *VariantService) UpdateVariant(uuid string, dataRequest *models.VariantUpdateRequest) (*models.Variant, error) {
+
+	dataVariant, err := s.variantRepo.GetVariant(uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	dataVariant.VariantName = dataRequest.VariantName
+	dataVariant.Quantity = dataRequest.Quantity
+
+	resultVariant, err := s.variantRepo.UpdateVariant(dataVariant)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultVariant, nil
 
 }

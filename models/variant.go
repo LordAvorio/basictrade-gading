@@ -24,6 +24,11 @@ type VariantRequest struct {
 	UUID        string `form:"product_id" validate:"required"`
 }
 
+type VariantUpdateRequest struct {
+	VariantName string `form:"variant_name" validate:"required",lte=100`
+	Quantity    int    `form:"quantity" validate:"required",gte=0`
+}
+
 type VariantResponse struct {
 	UUID        string `json:"uuid"`
 	VariantName string `json:"variant_name"`
@@ -31,10 +36,24 @@ type VariantResponse struct {
 	ProductID   uint   `json:"product_id"`
 }
 
-func (pr *VariantRequest) ValidationVariantCreate() map[string]string {
+func (vr *VariantRequest) ValidationVariantCreate() map[string]string {
 
 	errorMessage := map[string]string{}
-	err := utils.Validate.Struct(pr)
+	err := utils.Validate.Struct(vr)
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			errorMessage[err.Field()] = utils.ValidationMessage(err.Field(), err.Tag())
+		}
+	}
+
+	return errorMessage
+}
+
+func (vru *VariantUpdateRequest) ValidationVariantUpdate() map[string]string {
+
+	errorMessage := map[string]string{}
+	err := utils.Validate.Struct(vru)
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {

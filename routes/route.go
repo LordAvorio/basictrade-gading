@@ -47,6 +47,7 @@ func RouteSession(db *gorm.DB) *gin.Engine {
 		variantRoute.POST("/", middlewares.Authentication(), middlewares.ValidationRequest("create-variant"), variantController.CreateVariant)
 		variantRoute.GET("/:uuid", variantController.GetVariant)
 		variantRoute.GET("/", variantController.GetVariants)
+		variantRoute.PUT("/:uuid", middlewares.Authentication(), middlewares.AdminAuthorization("variant", db), middlewares.ValidationRequest("update-variant"), variantController.UpdateVariant)
 	}
 
 	return router

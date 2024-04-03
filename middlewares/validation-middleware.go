@@ -65,9 +65,20 @@ func ValidationRequest(section string) gin.HandlerFunc {
 				return
 			}
 
-			createProducttValidation := productUpdateRequest.ValidationProductUpdate()
-			if len(createProducttValidation) > 0 {
-				errorMessage = createProducttValidation
+			createProductValidation := productUpdateRequest.ValidationProductUpdate()
+			if len(createProductValidation) > 0 {
+				errorMessage = createProductValidation
+			}
+		case "update-variant":
+			variantUpdateRequest := models.VariantUpdateRequest{}
+			if err := ctx.Bind(&variantUpdateRequest); err != nil {
+				ctx.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+
+			createVariantValidation := variantUpdateRequest.ValidationVariantUpdate()
+			if len(createVariantValidation) > 0 {
+				errorMessage = createVariantValidation
 			}
 		}
 
