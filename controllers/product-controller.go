@@ -114,8 +114,41 @@ func (c *ProductController) GetProducts(ctx *gin.Context) {
 	result, err := c.productService.GetProducts(limit, offset, nameFilter)
 	if err != nil {
 		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
-		return		
+		return
 	}
 
 	models.ResponseSuccessWithData(ctx, result)
+}
+
+func (c *ProductController) UpdateProduct(ctx *gin.Context) {
+
+	productUpdateRequest := models.ProductUpdateRequest{}
+
+	uuid := ctx.Param("uuid")
+
+	if ctx.ContentType() == "multipart/form-data" {
+		if err := ctx.Bind(&productUpdateRequest); err != nil {
+			log.Error().Msg(err.Error())
+			models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		models.ResponseError(ctx, "Request should be form in multipart/form-data", http.StatusInternalServerError)
+		return
+	}
+
+	resultData, err := c.productService.UpdateProduct(uuid, &productUpdateRequest)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dataResponse := models.ProductResponse{
+		UUID: resultData.UUID,
+		Name: resultData.Name,
+		ImageUrl: resultData.ImageUrl,
+		AdminId: resultData.AdminID,
+	}
+
+	models.ResponseSuccessWithData(ctx, dataResponse)
 }

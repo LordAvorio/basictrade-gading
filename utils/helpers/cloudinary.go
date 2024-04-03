@@ -38,7 +38,7 @@ func UploadFile(fileHeader *multipart.FileHeader, fileName string) (string, erro
 
 	uploadParam, err := cloud.Upload.Upload(ctx, fileReader, uploader.UploadParams{
 		PublicID: fileName,
-		Folder: cloudFolderLocation,
+		Folder:   cloudFolderLocation,
 	})
 
 	if err != nil {
@@ -50,7 +50,7 @@ func UploadFile(fileHeader *multipart.FileHeader, fileName string) (string, erro
 
 }
 
-func convertFile(fileHeader *multipart.FileHeader) (*bytes.Reader, error){
+func convertFile(fileHeader *multipart.FileHeader) (*bytes.Reader, error) {
 
 	file, err := fileHeader.Open()
 	if err != nil {

@@ -15,6 +15,7 @@ type IProductService interface {
 	CreateProduct(*models.ProductRequest) (*models.Product, error)
 	GetProduct(string) (*models.Product, error)
 	GetProducts(int, int, string) (*models.Pagination, error)
+	UpdateProduct(string, *models.ProductUpdateRequest) (*models.Product, error)
 }
 
 func NewProductService(productRepo repositories.IProductRepository) *ProductService {
@@ -50,7 +51,6 @@ func (s *ProductService) CreateProduct(dataRequest *models.ProductRequest) (*mod
 	}
 
 	return resultProduct, nil
-
 }
 
 func (s *ProductService) GetProduct(uuid string) (*models.Product, error) {
@@ -79,16 +79,15 @@ func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*mod
 
 	resultProducts := []models.ProductResponse{}
 	for _, value := range *dataProducts {
-		dataProduct := models.ProductResponse {
-			UUID: value.UUID,
-			Name: value.Name,
+		dataProduct := models.ProductResponse{
+			UUID:     value.UUID,
+			Name:     value.Name,
 			ImageUrl: value.ImageUrl,
-			AdminId: value.AdminID,
+			AdminId:  value.AdminID,
 		}
 
 		resultProducts = append(resultProducts, dataProduct)
 	}
-
 
 	result := models.Pagination{
 		Data:         resultProducts,
@@ -99,5 +98,30 @@ func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*mod
 	}
 
 	return &result, nil
+}
 
+func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductUpdateRequest) (*models.Product, error) {
+
+	dataProduct, err := s.productRepo.GetProduct(uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	dataProduct.Name = dataRequest.Name
+
+	if dataRequest.Image.Filename != "" {
+		fileName := helpers.RemoveExtension(dataRequest.Image.Filename)
+		uploadResult, err := helpers.UploadFile(&dataRequest.Image, fileName)
+		if err != nil {
+			return nil, err
+		}
+		dataProduct.ImageUrl = uploadResult
+	}
+
+	resultProduct, err := s.productRepo.UpdateProduct(dataProduct)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultProduct, nil
 }
