@@ -16,6 +16,7 @@ type IVariantRepository interface {
 	GetVariant(string) (*models.Variant, error)
 	GetVariants(int, int, string) (*[]models.Variant, error)
 	GetTotalVariant(string) (int, error)
+	UpdateVariant(*models.Variant)(*models.Variant, error)
 }
 
 func NewVariantRepository(db *gorm.DB) *VariantRepository {
@@ -80,5 +81,16 @@ func (r *VariantRepository) GetTotalVariant(nameFilter string) (int, error) {
 	}
 
 	return int(totalVariant), nil
+
+}
+
+func (r *VariantRepository) UpdateVariant(variant *models.Variant) (*models.Variant, error) {
+
+	err := r.db.Model(&variant).Where("id = ?", variant.ID).Updates(variant).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return variant, nil
 
 }

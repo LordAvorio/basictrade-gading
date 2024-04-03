@@ -115,3 +115,35 @@ func (c *VariantController) GetVariants(ctx *gin.Context) {
 
 	models.ResponseSuccessWithData(ctx, result)
 }
+
+func (c *VariantController) UpdateVariant(ctx *gin.Context){
+	variantUpdateRequest := models.VariantUpdateRequest{}
+	uuid := ctx.Param("uuid")
+
+	if ctx.ContentType() == "multipart/form-data" {
+		if err := ctx.Bind(&variantUpdateRequest); err != nil {
+			log.Error().Msg(err.Error())
+			models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		models.ResponseError(ctx, "Request should be form in multipart/form-data", http.StatusInternalServerError)
+		return
+	}
+
+	resultData, err := c.variantService.UpdateVariant(uuid, &variantUpdateRequest)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	dataResponse := models.VariantResponse{
+		UUID: resultData.UUID,
+		VariantName: resultData.VariantName,
+		Quantity: resultData.Quantity,
+		ProductID: resultData.ProductID,
+	}
+
+	models.ResponseSuccessWithData(ctx, dataResponse)
+
+}
