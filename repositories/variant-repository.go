@@ -16,7 +16,8 @@ type IVariantRepository interface {
 	GetVariant(string) (*models.Variant, error)
 	GetVariants(int, int, string) (*[]models.Variant, error)
 	GetTotalVariant(string) (int, error)
-	UpdateVariant(*models.Variant)(*models.Variant, error)
+	UpdateVariant(*models.Variant) (*models.Variant, error)
+	DeleteVariant(string) error
 }
 
 func NewVariantRepository(db *gorm.DB) *VariantRepository {
@@ -93,4 +94,15 @@ func (r *VariantRepository) UpdateVariant(variant *models.Variant) (*models.Vari
 
 	return variant, nil
 
+}
+
+func (r *VariantRepository) DeleteVariant(uuid string) error {
+	variant := models.Variant{}
+
+	err := r.db.Where("uuid = ?", uuid).Delete(&variant).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

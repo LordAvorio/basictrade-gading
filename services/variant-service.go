@@ -17,6 +17,7 @@ type IVariantService interface {
 	GetVariant(string) (*models.Variant, error)
 	GetVariants(int, int, string) (*models.Pagination, error)
 	UpdateVariant(string, *models.VariantUpdateRequest) (*models.Variant, error)
+	DeleteVariant(string) error
 }
 
 func NewVariantService(variantRepo repositories.IVariantRepository, productRepo repositories.IProductRepository) *VariantService {
@@ -119,4 +120,14 @@ func (s *VariantService) UpdateVariant(uuid string, dataRequest *models.VariantU
 
 	return resultVariant, nil
 
+}
+
+func (s *VariantService) DeleteVariant(uuid string) error {
+
+	err := s.variantRepo.DeleteVariant(uuid)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
