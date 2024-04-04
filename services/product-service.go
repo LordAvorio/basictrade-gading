@@ -16,6 +16,7 @@ type IProductService interface {
 	GetProduct(string) (*models.Product, error)
 	GetProducts(int, int, string) (*models.Pagination, error)
 	UpdateProduct(string, *models.ProductUpdateRequest) (*models.Product, error)
+	DeleteProduct(string) error
 }
 
 func NewProductService(productRepo repositories.IProductRepository) *ProductService {
@@ -124,4 +125,15 @@ func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductU
 	}
 
 	return resultProduct, nil
+}
+
+func (s *ProductService) DeleteProduct(uuid string) error {
+
+	err := s.productRepo.DeleteProduct(uuid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

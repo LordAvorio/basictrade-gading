@@ -16,6 +16,7 @@ type IProductRepository interface {
 	GetProducts(int, int, string) (*[]models.Product, error)
 	GetTotalProduct(string) (int, error)
 	UpdateProduct(*models.Product) (*models.Product, error)
+	DeleteProduct(string) error
 }
 
 func NewProductRepository(db *gorm.DB) *ProductRepository {
@@ -96,4 +97,15 @@ func (r *ProductRepository) UpdateProduct(product *models.Product) (*models.Prod
 
 	return product, nil
 
+}
+
+func (r *ProductRepository) DeleteProduct(uuid string) error {
+	product := models.Product{}
+
+	err := r.db.Where("uuid = ?", uuid).Delete(&product).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
