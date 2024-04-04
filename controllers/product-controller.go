@@ -152,3 +152,17 @@ func (c *ProductController) UpdateProduct(ctx *gin.Context) {
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
 }
+
+func (c *ProductController) DeleteProduct(ctx *gin.Context){
+
+	uuid := ctx.Param("uuid")
+
+	err := c.productService.DeleteProduct(uuid)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	models.ResponseSuccess(ctx, "Delete product is success")
+
+}
