@@ -20,7 +20,7 @@ func NewVariantController(variantService services.IVariantService) *VariantContr
 	return &variantController
 }
 
-func(c *VariantController)CreateVariant(ctx *gin.Context){
+func (c *VariantController) CreateVariant(ctx *gin.Context) {
 
 	variantCreateRequest := models.VariantRequest{}
 
@@ -42,10 +42,10 @@ func(c *VariantController)CreateVariant(ctx *gin.Context){
 	}
 
 	dataResponse := models.VariantResponse{
-		UUID: resultData.UUID,
+		UUID:        resultData.UUID,
 		VariantName: resultData.VariantName,
-		Quantity: resultData.Quantity,
-		ProductID: resultData.ProductID,
+		Quantity:    resultData.Quantity,
+		ProductID:   resultData.ProductID,
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
@@ -67,10 +67,10 @@ func (c *VariantController) GetVariant(ctx *gin.Context) {
 	}
 
 	dataResponse := models.VariantResponse{
-		UUID: resultData.UUID,
+		UUID:        resultData.UUID,
 		VariantName: resultData.VariantName,
-		Quantity: resultData.Quantity,
-		ProductID: resultData.ProductID,
+		Quantity:    resultData.Quantity,
+		ProductID:   resultData.ProductID,
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
@@ -110,13 +110,13 @@ func (c *VariantController) GetVariants(ctx *gin.Context) {
 	result, err := c.variantService.GetVariants(limit, offset, nameFilter)
 	if err != nil {
 		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
-		return		
+		return
 	}
 
 	models.ResponseSuccessWithData(ctx, result)
 }
 
-func (c *VariantController) UpdateVariant(ctx *gin.Context){
+func (c *VariantController) UpdateVariant(ctx *gin.Context) {
 	variantUpdateRequest := models.VariantUpdateRequest{}
 	uuid := ctx.Param("uuid")
 
@@ -138,12 +138,25 @@ func (c *VariantController) UpdateVariant(ctx *gin.Context){
 	}
 
 	dataResponse := models.VariantResponse{
-		UUID: resultData.UUID,
+		UUID:        resultData.UUID,
 		VariantName: resultData.VariantName,
-		Quantity: resultData.Quantity,
-		ProductID: resultData.ProductID,
+		Quantity:    resultData.Quantity,
+		ProductID:   resultData.ProductID,
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
+
+}
+
+func (c *VariantController) DeleteVariant(ctx *gin.Context) {
+	uuid := ctx.Param("uuid")
+
+	err := c.variantService.DeleteVariant(uuid)
+	if err != nil {
+		models.ResponseError(ctx, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	models.ResponseSuccess(ctx, "Delete variant is success")
 
 }
