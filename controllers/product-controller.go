@@ -53,7 +53,6 @@ func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
-
 }
 
 func (c *ProductController) GetProduct(ctx *gin.Context) {
@@ -78,7 +77,6 @@ func (c *ProductController) GetProduct(ctx *gin.Context) {
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
-
 }
 
 func (c *ProductController) GetProducts(ctx *gin.Context) {
@@ -164,5 +162,4 @@ func (c *ProductController) DeleteProduct(ctx *gin.Context){
 	}
 
 	models.ResponseSuccess(ctx, "Delete product is success")
-
 }
