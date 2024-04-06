@@ -3,6 +3,9 @@ package helpers
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"path"
@@ -68,6 +71,21 @@ func convertFile(fileHeader *multipart.FileHeader) (*bytes.Reader, error) {
 
 }
 
-func RemoveExtension(filename string) string {
-	return path.Base(filename[:len(filename)-len(path.Ext(filename))])
+func GenerateFileNameImage() (string, error) {
+
+	timeNow := time.Now()
+	timeFormat := timeNow.Format("02012006")
+	byteCode := make([]byte, 5)
+
+	_, err := rand.Read(byteCode)
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return "", err
+	}
+
+	byteString := hex.EncodeToString(byteCode)
+
+	codeImage := fmt.Sprintf("PRD%s%s", timeFormat, byteString)
+
+	return codeImage, nil
 }

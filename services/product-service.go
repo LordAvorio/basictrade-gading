@@ -27,7 +27,10 @@ func NewProductService(productRepo repositories.IProductRepository) *ProductServ
 
 func (s *ProductService) CreateProduct(dataRequest *models.ProductRequest) (*models.Product, error) {
 
-	fileName := helpers.RemoveExtension(dataRequest.Image.Filename)
+	fileName, err := helpers.GenerateFileNameImage()
+	if err != nil {
+		return nil, err
+	}
 
 	uploadResult, err := helpers.UploadFile(&dataRequest.Image, fileName)
 	if err != nil {
@@ -111,7 +114,11 @@ func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductU
 	dataProduct.Name = dataRequest.Name
 
 	if dataRequest.Image.Filename != "" {
-		fileName := helpers.RemoveExtension(dataRequest.Image.Filename)
+		fileName, err := helpers.GenerateFileNameImage()
+		if err != nil {
+			return nil, err
+		}
+
 		uploadResult, err := helpers.UploadFile(&dataRequest.Image, fileName)
 		if err != nil {
 			return nil, err
