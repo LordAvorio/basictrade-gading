@@ -114,6 +114,12 @@ func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductU
 	dataProduct.Name = dataRequest.Name
 
 	if dataRequest.Image.Filename != "" {
+
+		errDeleteCloudinary := helpers.DeleteFile(dataProduct.ImageUrl)
+		if errDeleteCloudinary != nil {
+			return nil, err
+		}
+		
 		fileName, err := helpers.GenerateFileNameImage()
 		if err != nil {
 			return nil, err
@@ -136,11 +142,20 @@ func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductU
 
 func (s *ProductService) DeleteProduct(uuid string) error {
 
-	err := s.productRepo.DeleteProduct(uuid)
+	dataProduct, err := s.productRepo.GetProduct(uuid)
+	if err != nil {
+		return err
+	}
+
+	err = helpers.DeleteFile(dataProduct.ImageUrl)
+	if err != nil {
+		return err
+	}
+
+	err = s.productRepo.DeleteProduct(uuid)
 	if err != nil {
 		return err
 	}
 
 	return nil
-
 }

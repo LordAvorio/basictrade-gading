@@ -5,10 +5,11 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
-	"path"
+	"strings"
 	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -89,3 +90,51 @@ func GenerateFileNameImage() (string, error) {
 
 	return codeImage, nil
 }
+
+func DeleteFile(pathFile string) error {
+
+	pathSplit := strings.Split(pathFile, "/")
+	fileName := pathSplit[len(pathSplit)-1]
+
+	fileNameSplit := strings.Split(fileName, ".")
+	fileNameWithoutExt := fileNameSplit[0]
+
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	cloudName := viper.GetString("CLOUDINARY_CLOUD_NAME")
+	cloudApiKey := viper.GetString("CLOUDINARY_API_KEY")
+	cloudApiSecret := viper.GetString("CLOUDINARY_API_SECRET")
+	cloudFolderLocation := viper.GetString("CLOUDINARY_UPLOAD_FOLDER")
+
+	publicId := fmt.Sprintf("%s/%s", cloudFolderLocation, fileNameWithoutExt)
+
+	cloud, err := cloudinary.NewFromParams(cloudName, cloudApiKey, cloudApiSecret)
+	if err != nil {
+		log.Error().Msg(err.Error())
+		return err
+	}
+
+	response, errDelete := cloud.Upload.Destroy(ctx, uploader.DestroyParams{
+		PublicID: publicId,
+	})
+
+	if errDelete != nil {
+		log.Error().Msg(errDelete.Error())
+		return errDelete
+	}
+
+	if response.Error.Message != "" {
+		log.Error().Msg(response.Error.Message)
+		return errors.New(response.Error.Message)
+	}
+
+	if response.Result == "not found" {
+		log.Error().Msg("Cannot found data image on cloudinary")
+		return errors.New("Cannot found data image on cloudinary")
+	}
+
+	return nil
+
+}
+
