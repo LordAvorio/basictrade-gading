@@ -1,24 +1,26 @@
 package helpers
 
-func GetTotalPages(totalProducts, limit int) int {
-	return (totalProducts + limit - 1) / limit
-}
+func GetPreviousOffset(offset, limit int) int {
 
-func GetNextPage(offset, limit, totalData int) int {
-	nextOffset := offset + limit
-	if nextOffset < totalData {
-		return (nextOffset / limit) + 1
-	}
-	return -1
-}
+	previousOffset := -1
 
-func GetPrevPage(offset, limit int) int {
 	if offset > 0 {
-		return (offset / limit) + 1
+		countOffset := offset - limit
+		if countOffset >= 0 {
+			previousOffset = countOffset
+		}
 	}
-	return -1
+
+	return previousOffset
 }
 
-func GetCurrentPage(offset, limit int) int {
-	return (offset / limit) + 1
+func GetNextOffset(offset, limit, total int) int {
+	
+	nextOffset := -1
+
+	if (offset + limit) < total {
+		nextOffset = offset + limit
+	}
+
+	return nextOffset
 }

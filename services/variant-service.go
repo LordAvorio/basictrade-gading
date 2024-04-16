@@ -77,8 +77,6 @@ func (s *VariantService) GetVariants(limit, offset int, nameFilter string) (*mod
 		return nil, err
 	}
 
-	totalPage := helpers.GetTotalPages(totalVariants, limit)
-
 	resultVariants := []models.VariantResponse{}
 	for _, value := range *dataVariants {
 		dataVariant := models.VariantResponse{
@@ -92,15 +90,16 @@ func (s *VariantService) GetVariants(limit, offset int, nameFilter string) (*mod
 	}
 
 	result := models.Pagination{
-		Data:         resultVariants,
-		TotalPage:    totalPage,
-		NextPage:     helpers.GetNextPage(offset, limit, totalVariants),
-		PreviousPage: helpers.GetPrevPage(offset, limit),
-		CurrentPage:  helpers.GetCurrentPage(offset, limit),
+		Data:       resultVariants,
+		Offset:     offset,
+		Limit:      limit,
+		Total:      totalVariants,
+		PrevOffset: helpers.GetPreviousOffset(offset, limit),
+		NextOffset: helpers.GetNextOffset(offset, limit, totalVariants),
 	}
 
-	return &result, nil
 
+	return &result, nil
 }
 
 func (s *VariantService) UpdateVariant(uuid string, dataRequest *models.VariantUpdateRequest) (*models.Variant, error) {
