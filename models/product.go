@@ -10,7 +10,7 @@ import (
 type Product struct {
 	ID        uint   `gorm:"primaryKey"`
 	UUID      string `gorm:"not null; type:varchar(155)"`
-	Name      string `gorm:"not null; type:varchar(100); unique"`
+	Name      string `gorm:"not null; type:varchar(255); unique"`
 	ImageUrl  string `gorm:"not null; type:varchar(255)"`
 	AdminID   uint
 	Admin     *Admin
@@ -20,13 +20,13 @@ type Product struct {
 }
 
 type ProductRequest struct {
-	Name    string               `form:"name" validate:"required,lte=100"`
+	Name    string               `form:"name" validate:"required,lte=255"`
 	Image   multipart.FileHeader `form:"file" validate:"required"`
 	AdminId uint
 }
 
 type ProductUpdateRequest struct {
-	Name    string               `form:"name" validate:"required,lte=100"`
+	Name    string               `form:"name" validate:"required,lte=255"`
 	Image   multipart.FileHeader `form:"file"`
 }
 
