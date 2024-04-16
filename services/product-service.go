@@ -79,8 +79,6 @@ func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*mod
 		return nil, err
 	}
 
-	totalPage := helpers.GetTotalPages(totalProducts, limit)
-
 	resultProducts := []models.ProductResponse{}
 	for _, value := range *dataProducts {
 		dataProduct := models.ProductResponse{
@@ -94,11 +92,12 @@ func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*mod
 	}
 
 	result := models.Pagination{
-		Data:         resultProducts,
-		TotalPage:    totalPage,
-		NextPage:     helpers.GetNextPage(offset, limit, totalProducts),
-		PreviousPage: helpers.GetPrevPage(offset, limit),
-		CurrentPage:  helpers.GetCurrentPage(offset, limit),
+		Data:       resultProducts,
+		Offset:     offset,
+		Limit:      limit,
+		Total:      totalProducts,
+		PrevOffset: helpers.GetPreviousOffset(offset, limit),
+		NextOffset: helpers.GetNextOffset(offset, limit, totalProducts),
 	}
 
 	return &result, nil
@@ -119,7 +118,7 @@ func (s *ProductService) UpdateProduct(uuid string, dataRequest *models.ProductU
 		if errDeleteCloudinary != nil {
 			return nil, err
 		}
-		
+
 		fileName, err := helpers.GenerateFileNameImage()
 		if err != nil {
 			return nil, err
