@@ -10,7 +10,7 @@ import (
 type Variant struct {
 	ID          uint   `gorm:"primaryKey"`
 	UUID        string `gorm:"not null; type:varchar(155)"`
-	VariantName string `gorm:"not null; type:varchar(100);"`
+	VariantName string `gorm:"not null; type:varchar(255);"`
 	Quantity    int    `gorm:"not null; type:bigint"`
 	ProductID   uint
 	Product     *Product
@@ -19,13 +19,13 @@ type Variant struct {
 }
 
 type VariantRequest struct {
-	VariantName string `form:"variant_name" validate:"required",lte=100`
+	VariantName string `form:"variant_name" validate:"required",lte=255`
 	Quantity    int    `form:"quantity" validate:"required",gte=0`
 	UUID        string `form:"product_id" validate:"required"`
 }
 
 type VariantUpdateRequest struct {
-	VariantName string `form:"variant_name" validate:"required",lte=100`
+	VariantName string `form:"variant_name" validate:"required",lte=255`
 	Quantity    int    `form:"quantity" validate:"required",gte=0`
 }
 
