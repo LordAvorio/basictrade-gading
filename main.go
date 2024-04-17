@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	utils.ReadConfigEnvironment()
+	// utils.ReadConfigEnvironment()
 	utils.InitZeroLog()
 	utils.InitGoValidation()
 }
