@@ -2,13 +2,13 @@ package helpers
 
 import (
 	"errors"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 func GenerateToken(id uint, email string) (string, error) {
@@ -20,7 +20,7 @@ func GenerateToken(id uint, email string) (string, error) {
 	}
 
 	parseToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secretKey := viper.GetString("JWT_SALT")
+	secretKey := os.Getenv("JWT_SALT")
 	signedToken, err := parseToken.SignedString([]byte(secretKey))
 	if err != nil {
 		log.Error().Msg(err.Error())
@@ -34,7 +34,7 @@ func GenerateToken(id uint, email string) (string, error) {
 func VerifyToken(ctx *gin.Context) (interface{}, error) {
 
 	tokenHeader := ctx.Request.Header.Get("Authorization")
-	secretKey := viper.GetString("JWT_SALT")
+	secretKey := os.Getenv("JWT_SALT")
 
 	if bearer := strings.HasPrefix(tokenHeader, "Bearer"); !bearer {
 		log.Error().Msg("Bearer is empty")

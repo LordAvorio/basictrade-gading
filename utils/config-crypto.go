@@ -2,16 +2,16 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"time"
 	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/argon2"
 )
 
 func HashPass(password string) string {
 
-	saltPass := viper.GetString("PASSWORD_SALT")
+	saltPass := os.Getenv("PASSWORD_SALT")
 
 	hashedPassword := argon2.IDKey([]byte(password), []byte(saltPass), 1, 64*1024, 4, 32)
 

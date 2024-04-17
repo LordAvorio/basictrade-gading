@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 func UploadFile(fileHeader *multipart.FileHeader, fileName string) (string, error) {
@@ -23,10 +23,10 @@ func UploadFile(fileHeader *multipart.FileHeader, fileName string) (string, erro
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	cloudName := viper.GetString("CLOUDINARY_CLOUD_NAME")
-	cloudApiKey := viper.GetString("CLOUDINARY_API_KEY")
-	cloudApiSecret := viper.GetString("CLOUDINARY_API_SECRET")
-	cloudFolderLocation := viper.GetString("CLOUDINARY_UPLOAD_FOLDER")
+	cloudName := os.Getenv("CLOUDINARY_CLOUD_NAME")
+	cloudApiKey := os.Getenv("CLOUDINARY_API_KEY")
+	cloudApiSecret := os.Getenv("CLOUDINARY_API_SECRET")
+	cloudFolderLocation := os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
 
 	cloud, err := cloudinary.NewFromParams(cloudName, cloudApiKey, cloudApiSecret)
 	if err != nil {
@@ -102,10 +102,10 @@ func DeleteFile(pathFile string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	cloudName := viper.GetString("CLOUDINARY_CLOUD_NAME")
-	cloudApiKey := viper.GetString("CLOUDINARY_API_KEY")
-	cloudApiSecret := viper.GetString("CLOUDINARY_API_SECRET")
-	cloudFolderLocation := viper.GetString("CLOUDINARY_UPLOAD_FOLDER")
+	cloudName := os.Getenv("CLOUDINARY_CLOUD_NAME")
+	cloudApiKey := os.Getenv("CLOUDINARY_API_KEY")
+	cloudApiSecret := os.Getenv("CLOUDINARY_API_SECRET")
+	cloudFolderLocation := os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
 
 	publicId := fmt.Sprintf("%s/%s", cloudFolderLocation, fileNameWithoutExt)
 
@@ -131,7 +131,7 @@ func DeleteFile(pathFile string) error {
 
 	if response.Result == "not found" {
 		log.Error().Msg("Cannot found data image on cloudinary")
-		return errors.New("Cannot found data image on cloudinary")
+		return errors.New("cannot found data image on cloudinary")
 	}
 
 	return nil
