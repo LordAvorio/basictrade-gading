@@ -4,9 +4,9 @@ import (
 	"basictrade-gading/database"
 	"basictrade-gading/routes"
 	"basictrade-gading/utils"
-
+	"os"
+	"strconv"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 func init() {
@@ -22,16 +22,24 @@ func main() {
 		log.Panic().Msg(errDB.Error())
 	}
 
-	if runMigration := viper.GetBool("AUTO_MIGRATE"); runMigration {
-		errMigration := database.RunMigration(db)
-		if errMigration != nil {
-			log.Panic().Msg(errMigration.Error())
+	doMigration := os.Getenv("AUTO_MIGRATE")
+	if doMigration == "" {
+		log.Panic().Msg("Cannot find environtment for database auto migration")
+	} else {
+		doMigrationBool, err := strconv.ParseBool(doMigration)
+		if err != nil {
+			log.Panic().Msg(err.Error())
+		}
+		if doMigrationBool {
+			errMigration := database.RunMigration(db)
+			if errMigration != nil {
+				log.Panic().Msg(errMigration.Error())
+			}
 		}
 	}
 
-	portApp := viper.GetString("APP_PORT")
+	portApp := os.Getenv("APP_PORT")
 	app := routes.RouteSession(db)
 	app.Run(portApp)
 
-	
 }
