@@ -38,8 +38,8 @@ func main() {
 		}
 	}
 
-	portApp := os.Getenv("APP_PORT")
+	// portApp := os.Getenv("APP_PORT")
 	app := routes.RouteSession(db)
-	app.Run(portApp)
+	app.Run()
 
 }
