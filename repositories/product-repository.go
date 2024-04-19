@@ -40,7 +40,7 @@ func (r *ProductRepository) CreateProduct(product *models.Product) (*models.Prod
 func (r *ProductRepository) GetProduct(uuid string) (*models.Product, error) {
 
 	result := models.Product{}
-	err := r.db.Where("uuid = ?", uuid).Take(&result).Error
+	err := r.db.Preload("Variants").Where("uuid = ?", uuid).Take(&result).Error
 	if err != nil {
 		log.Error().Msg(err.Error())
 		return nil, err
@@ -52,7 +52,7 @@ func (r *ProductRepository) GetProduct(uuid string) (*models.Product, error) {
 func (r *ProductRepository) GetProducts(offset, limit int, nameFilter string) (*[]models.Product, error) {
 	var result []models.Product
 
-	queryStatement := r.db.Offset(offset).Limit(limit)
+	queryStatement := r.db.Preload("Variants").Offset(offset).Limit(limit)
 
 	if nameFilter != "" {
 		queryStatement = queryStatement.Where("name LIKE ?", "%"+nameFilter+"%")

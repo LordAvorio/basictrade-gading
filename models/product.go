@@ -26,15 +26,16 @@ type ProductRequest struct {
 }
 
 type ProductUpdateRequest struct {
-	Name    string               `form:"name" validate:"required,lte=255"`
-	Image   multipart.FileHeader `form:"file"`
+	Name  string               `form:"name" validate:"required,lte=255"`
+	Image multipart.FileHeader `form:"file"`
 }
 
 type ProductResponse struct {
-	UUID     string `json:"uuid"`
-	Name     string `json:"name"`
-	ImageUrl string `json:"image_url"`
-	AdminId  uint   `json:"admin_id"`
+	UUID     string            `json:"uuid"`
+	Name     string            `json:"name"`
+	ImageUrl string            `json:"image_url"`
+	AdminId  uint              `json:"admin_id"`
+	Variants []VariantResponse `json:"variants"`
 }
 
 func (pr *ProductRequest) ValidationProductCreate() map[string]string {

@@ -19,14 +19,14 @@ type Variant struct {
 }
 
 type VariantRequest struct {
-	VariantName string `form:"variant_name" validate:"required",lte=255`
-	Quantity    int    `form:"quantity" validate:"required",gte=0`
+	VariantName string `form:"variant_name" validate:"required, lte=255"`
+	Quantity    int    `form:"quantity" validate:"required, gte=0"`
 	UUID        string `form:"product_id" validate:"required"`
 }
 
 type VariantUpdateRequest struct {
-	VariantName string `form:"variant_name" validate:"required",lte=255`
-	Quantity    int    `form:"quantity" validate:"required",gte=0`
+	VariantName string `form:"variant_name" validate:"required, lte=255"`
+	Quantity    int    `form:"quantity" validate:"required, gte=0"`
 }
 
 type VariantResponse struct {
