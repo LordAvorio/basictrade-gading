@@ -81,11 +81,25 @@ func (s *ProductService) GetProducts(limit, offset int, nameFilter string) (*mod
 
 	resultProducts := []models.ProductResponse{}
 	for _, value := range *dataProducts {
+
+		listVariants := []models.VariantResponse{}
+
+		for _, variant := range value.Variants {
+			dataVariant := models.VariantResponse{
+				UUID:        variant.UUID,
+				VariantName: variant.VariantName,
+				Quantity:    variant.Quantity,
+				ProductID:   variant.ProductID,
+			}
+			listVariants = append(listVariants, dataVariant)
+		}
+
 		dataProduct := models.ProductResponse{
 			UUID:     value.UUID,
 			Name:     value.Name,
 			ImageUrl: value.ImageUrl,
 			AdminId:  value.AdminID,
+			Variants: listVariants,
 		}
 
 		resultProducts = append(resultProducts, dataProduct)
