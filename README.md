@@ -45,7 +45,7 @@ PASSWORD_SALT="" # INSERT RANDOM STRING FOR SALT PASSWORD
 # FLAG
 AUTO_MIGRATE=false # CHANGE TRUE IF YOU WANT RUN MIGRATION DB
 
-# CLOUDINARY (Please see the API documentation for the infomration)
+# CLOUDINARY (Please see the API documentation for the information)
 CLOUDINARY_CLOUD_NAME=""
 CLOUDINARY_API_KEY=""
 CLOUDINARY_API_SECRET=""
