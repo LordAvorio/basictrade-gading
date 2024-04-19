@@ -58,3 +58,12 @@ Run the main.go file
   go run main.go
 ```
 
+## API Reference
+
+For the api reference you can use this postman collection
+
+| Link     |
+| :------- |
+| [Here](https://drive.google.com/file/d/1CWY_tuNZwzSEF7mCwVBzwVyAPVZkwFRU/view?usp=sharing) |
+
+
