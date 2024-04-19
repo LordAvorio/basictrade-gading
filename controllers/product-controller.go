@@ -69,11 +69,23 @@ func (c *ProductController) GetProduct(ctx *gin.Context) {
 		return
 	}
 
+	listVariants := []models.VariantResponse{}
+	for _, variant := range resultData.Variants {
+		dataVariant := models.VariantResponse{
+			UUID:        variant.UUID,
+			VariantName: variant.VariantName,
+			Quantity:    variant.Quantity,
+			ProductID:   variant.ProductID,
+		}
+		listVariants = append(listVariants, dataVariant)
+	}
+
 	dataResponse := models.ProductResponse{
 		UUID:     resultData.UUID,
 		Name:     resultData.Name,
 		ImageUrl: resultData.ImageUrl,
 		AdminId:  resultData.AdminID,
+		Variants: listVariants,
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
@@ -142,16 +154,16 @@ func (c *ProductController) UpdateProduct(ctx *gin.Context) {
 	}
 
 	dataResponse := models.ProductResponse{
-		UUID: resultData.UUID,
-		Name: resultData.Name,
+		UUID:     resultData.UUID,
+		Name:     resultData.Name,
 		ImageUrl: resultData.ImageUrl,
-		AdminId: resultData.AdminID,
+		AdminId:  resultData.AdminID,
 	}
 
 	models.ResponseSuccessWithData(ctx, dataResponse)
 }
 
-func (c *ProductController) DeleteProduct(ctx *gin.Context){
+func (c *ProductController) DeleteProduct(ctx *gin.Context) {
 
 	uuid := ctx.Param("uuid")
 
